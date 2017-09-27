@@ -25,17 +25,11 @@ $(document).ready(function(){
 
     function show(){
 
-        temp = Math.random()*0.5+20;
-        humi = Math.random()*0.6+50;
-   
+        temp = Math.random()*20+20;
+        humi = Math.random()*20+50;
+        map.closeInfoWindow(infoWindow,currentUser);
         currentUser = new BMap.Point(120.61990712,31+   (Math.random() * 0.007 + 0.0000015), 31.31798737 + (Math.random() * 0.007 + 0.000000015));
-        marker.setPosition(currentUser);
-        map.panTo(currentUser);
-        //alert('您的位置：'+currentUser.lng+','+currentUser.lat);
-        // geoc.getLocation(currentUser, function(rs){
-		// 	var addComp = rs.addressComponents;
-		// 	alert(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
-		// });        
+        marker.setPosition(currentUser);       
         infoWindow = new BMap.InfoWindow('T:'+temp+'C°<br/>H:'+humi+'% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts); 
     }
     setInterval(show,10000);
