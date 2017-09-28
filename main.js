@@ -67,36 +67,7 @@ $(document).ready(function(){
         south_size:100
     });
     var ctx = document.getElementById("myChart").getContext("2d");
-    var myLine = Chart.Line(ctx, {
-        data: lineChartData,
-        options: {
-            responsive: true,
-            hoverMode: 'index',
-            stacked: false,
-            title:{
-                display: true,
-                text:'Chart.js Line Chart - Multi Axis'
-            },
-            scales: {
-                yAxes: [{
-                    type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                    display: true,
-                    position: "left",
-                    id: "y-axis-1",
-                }, {
-                    type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                    display: true,
-                    position: "right",
-                    id: "y-axis-2",
-
-                    // grid line settings
-                    gridLines: {
-                        drawOnChartArea: false, // only want the grid lines for one axis to show up
-                    },
-                }],
-            }
-        }
-    });
+     
     function addLine(points){  
           if(pointsLen == 0){  
               return;  
@@ -117,12 +88,46 @@ $(document).ready(function(){
         map.closeInfoWindow(infoWindow,currentUser);
         currentUser = new BMap.Point(120.61990712,31+   (Math.random() * 0.007 + 0.0000015), 31.31798737 + (Math.random() * 0.007 + 0.000000015));
         linePoints.push(currentUser);
+       
         addLine(linePoints);
         marker.setPosition(currentUser);       
         infoWindow = new BMap.InfoWindow('T:'+temp+'C°<br/>H:'+humi+'% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts);
         map.panTo(currentUser); 
     }
-    setInterval(show,1000);
+    function showcharts(){
+        new Chart.Line(ctx, {
+            data: lineChartData,
+            options: {
+                responsive: true,
+                hoverMode: 'index',
+                stacked: false,
+                title:{
+                    display: true,
+                    text:'Chart.js Line Chart - Multi Axis'
+                },
+                scales: {
+                    yAxes: [{
+                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: "left",
+                        id: "y-axis-1",
+                    }, {
+                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: "right",
+                        id: "y-axis-2",
+    
+                        // grid line settings
+                        gridLines: {
+                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        },
+                    }],
+                }
+            }
+        });
+    }
+    setInterval(show,5000);
+    setInterval(showcharts,1000);
     marker.addEventListener("click", function(){          
 		map.openInfoWindow(infoWindow,currentUser); //开启信息窗口
 	});
