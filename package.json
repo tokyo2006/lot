@@ -1,0 +1,25 @@
+{
+  "name": "lot",
+  "version": "1.0.0",
+  "description": "** nodemon is a kind of tool that monitor the modification of any files changes in current directory ** 1: npm install nodemon",
+  "main": "app.js",
+  "dependencies": {
+    "mime": "^1.3.4",
+    "nodemon": "^1.12.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tokyo2006/lot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tokyo2006/lot/issues"
+  },
+  "homepage": "https://github.com/tokyo2006/lot#readme"
+}
