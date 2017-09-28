@@ -20,6 +20,10 @@ var linePoints = [];
 var temps = [];
 var humis = [];
 var timedata=[];
+var startTime=Date.now();
+var endTime = Date.now();
+var convertor = new BMap.Convertor();
+
 
 var currentUser = getCurrentUser(); 
 linePoints.push(currentUser);
@@ -36,7 +40,13 @@ var myIcon = new BMap.Icon("truck_mini.png", new BMap.Size(32, 70), {
 var marker = new BMap.Marker(currentUser, {icon: myIcon});  
 var geoc = new BMap.Geocoder();  
 var infoWindow = new BMap.InfoWindow('T:16C°<br/>H:80% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts); 
-$(document).ready(function(){  
+$(document).ready(function(){ 
+  
+    
+
+    
+
+
     var map = new BMap.Map("allmap");  // 创建Map实例
     map.centerAndZoom('苏州', 15);// 初始化地图,设置中心点坐标和地图级别
 	map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
@@ -66,16 +76,81 @@ $(document).ready(function(){
           map.addOverlay(polyline);   //增加折线  
      } 
     function show(){
-        temp = Math.random()*20+20;
-        humi = Math.random()*20+50;
-        $("#currentTemp").val(temp);
-        $("#currentHumi").val(humi);
+        
+        endTime = Date.now();
+        // var originUrl = "https://www.loraflow.io/v1/application/data?appeui=8f1d7956939f95a0&token=1v84wa7375651a298f9ff8eb008fa&order=desc&startTime="+startTime+"&endTime="+endTime
+        var originUrl = "https://www.loraflow.io/v1/application/data?appeui=8f1d7956939f95a0&token=1v84wa7375651a298f9ff8eb008fa&order=asc&start=1506591300000&limit=20";
+        startTime = endTime;
+        var lng1;
+        var lng32;
+        var lng16;
+        var lng;
+
+        var lat;
+        var lat1;
+        var lat120;
+        var lat43;
+
+        $.ajaxSetup({  
+            async : false  
+        }); 
+
+        $.get(originUrl,null,function(data){
+            var addr;
+            var i;    
+            for(i=0;i<data.list.length;i++){
+              console.log("----2",data.list[i]);
+              console.log("----1",data.list[i].data);
+               var res = getHexToString(data.list[i].data);
+               console.log("----",res);
+               addr = JSON.parse(res).address;
+               console.log("+++++",addr);
+               console.log("---",addr);
+              if(addr.lnt !== 0 && addr.lat !== 0 ){
+                   break;
+               }
+            };
+            if(i>=data.list.length) return;
+            // console.log("123---",JSON.parse(getHexToString(addr)));
+
+            var res = getHexToString(data.list[i].data);
+            res = JSON.parse(res);
+            $("#currentTemp").val(res.t + "°C");
+            $("#currentHumi").val(res.h + "%");
+            lat1 = res.address.lat;
+            lat120 = parseInt((lat1 * 10000)/1000000);
+            lat43 = ((lat1 * 10000)%1000000);
+            lat = lat120 + parseFloat(lat43/600000);
+
+            lng1 = res.address.lng;
+            lng31 = parseInt((lng1 * 10000)/1000000);
+            lng16 = ((lng1 * 10000)%1000000);
+            lng = lng31 + parseFloat(lng16/600000);
+
+            temp = res.t;
+            humi = res.h;
+        });
+
+
+        var originalPoint = new BMap.Point(lng, lat);
+        console.log("4444444",originalPoint);
+        var pointArr = [];
+        pointArr.push(originalPoint);
+        translateCallback = function (data){
+          console.log("see data status---",data);
+          if(data.status === 0) {
+             currentUser = data.points[0];
+             console.log("callback------",currentUser);
+          }
+        };
+        convertor.translate(pointArr, 1, 5, translateCallback);
+
+        
         currentTime = new Date();
         timedata.push(currentTime.getHours()+':'+currentTime.getMinutes()+':'+currentTime.getSeconds());
         temps.push(randomScalingFactor());
         humis.push(randomScalingFactor()+10);
         map.closeInfoWindow(infoWindow,currentUser);
-        currentUser = new BMap.Point(120.61990712,31+   (Math.random() * 0.007 + 0.0000015), 31.31798737 + (Math.random() * 0.007 + 0.000000015));
         linePoints.push(currentUser);
         geoc.getLocation(currentUser, function(rs){
             var addComp = rs.addressComponents;
