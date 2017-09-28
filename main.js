@@ -26,6 +26,9 @@ $(document).ready(function(){
     map.addOverlay(marker);   
     map.panTo(currentUser);
 
+    var myLayout = $("body").layout({
+        applyDefaultStyles: true
+    });
     function addLine(points){  
         
 
