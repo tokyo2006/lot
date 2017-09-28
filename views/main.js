@@ -34,6 +34,7 @@ var myIcon = new BMap.Icon("truck_mini.png", new BMap.Size(32, 70), {
     imageOffset: new BMap.Size(0, 0)   // 设置图片偏移    
   });  
 var marker = new BMap.Marker(currentUser, {icon: myIcon});  
+var geoc = new BMap.Geocoder();  
 var infoWindow = new BMap.InfoWindow('T:16C°<br/>H:80% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts); 
 $(document).ready(function(){  
     var map = new BMap.Map("allmap");  // 创建Map实例
@@ -67,6 +68,8 @@ $(document).ready(function(){
     function show(){
         temp = Math.random()*20+20;
         humi = Math.random()*20+50;
+        $("#currentTemp").val(temp);
+        $("#currentHumi").val(humi);
         currentTime = new Date();
         timedata.push(currentTime.getHours()+':'+currentTime.getMinutes()+':'+currentTime.getSeconds());
         temps.push(randomScalingFactor());
@@ -74,7 +77,10 @@ $(document).ready(function(){
         map.closeInfoWindow(infoWindow,currentUser);
         currentUser = new BMap.Point(120.61990712,31+   (Math.random() * 0.007 + 0.0000015), 31.31798737 + (Math.random() * 0.007 + 0.000000015));
         linePoints.push(currentUser);
-       
+        geoc.getLocation(currentUser, function(rs){
+            var addComp = rs.addressComponents;
+            $("#currentAddress").val(addComp.province + " " + addComp.city + " " + addComp.district + " " + addComp.street + " " + addComp.streetNumber);
+		});    
         addLine(linePoints);
         marker.setPosition(currentUser);       
         infoWindow = new BMap.InfoWindow('T:'+temp+'C°<br/>H:'+humi+'% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts);
