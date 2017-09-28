@@ -153,6 +153,13 @@ $(document).ready(function(){
     marker.addEventListener("click", function(){          
 		map.openInfoWindow(infoWindow,currentUser); //开启信息窗口
 	});
+
+    angular.module("lotApp",[]).controller("sideController",function($scope){
+    $scope.currentPos = "123";
+    $scope.currentTem = "456";
+    $scope.currentHum = "789";
+    })
+
     
 });
 function opendoor(){
@@ -202,3 +209,5 @@ function getHexToString(hexStr){
 	}
     return text;
 }
+
+  
