@@ -19,24 +19,8 @@ var humi = 50;
 var linePoints = [];
 var temps = [];
 var humis = [];
-var lineChartData = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [{
-        label: "My First dataset",
-        borderColor: window.chartColors.red,
-        backgroundColor: window.chartColors.red,
-        fill: false,
-        data: temps,
-        yAxisID: "y-axis-1",
-    }, {
-        label: "My Second dataset",
-        borderColor: window.chartColors.blue,
-        backgroundColor: window.chartColors.blue,
-        fill: false,
-        data: humis,
-        yAxisID: "y-axis-2"
-    }]
-};
+var timedata=[];
+
 var currentUser = getCurrentUser(); 
 linePoints.push(currentUser);
 var pointsLen = linePoints.length,i,polyline;  
@@ -66,8 +50,8 @@ $(document).ready(function(){
         west_size:100,
         south_size:100
     });
-    var ctx = document.getElementById("myChart").getContext("2d");
-     
+    var ctx = $("#myChart");
+    //ctx.canvas.parentNode.style.height = '128px';
     function addLine(points){  
           if(pointsLen == 0){  
               return;  
@@ -83,8 +67,10 @@ $(document).ready(function(){
     function show(){
         temp = Math.random()*20+20;
         humi = Math.random()*20+50;
+        currentTime = new Date();
+        timedata.push(currentTime.getHours()+':'+currentTime.getMinutes()+':'+currentTime.getSeconds());
         temps.push(randomScalingFactor());
-        humis.push(randomScalingFactor());
+        humis.push(randomScalingFactor()+10);
         map.closeInfoWindow(infoWindow,currentUser);
         currentUser = new BMap.Point(120.61990712,31+   (Math.random() * 0.007 + 0.0000015), 31.31798737 + (Math.random() * 0.007 + 0.000000015));
         linePoints.push(currentUser);
@@ -95,18 +81,49 @@ $(document).ready(function(){
         map.panTo(currentUser); 
     }
     function showcharts(){
+        var lineChartData = {
+            labels: timedata,
+            datasets: [{
+                label: "Temperature",
+                borderColor: window.chartColors.red,
+                backgroundColor: window.chartColors.red,
+                fill: false,
+                data: temps,
+                yAxisID: "y-axis-1",
+            }, {
+                label: "Humidity",
+                borderColor: window.chartColors.blue,
+                backgroundColor: window.chartColors.blue,
+                fill: false,
+                data: humis,
+                yAxisID: "y-axis-2"
+            }]
+        };
         new Chart.Line(ctx, {
             data: lineChartData,
             options: {
+                animation: {
+                    duration: 0, // general animation time
+                },
+                hover: {
+                    animationDuration: 0, // duration of animations when hovering an item
+                },
+                responsiveAnimationDuration: 0, 
                 responsive: true,
                 hoverMode: 'index',
                 stacked: false,
                 title:{
                     display: true,
-                    text:'Chart.js Line Chart - Multi Axis'
+                    text:' Temperature and Humidity Trace Chart'
                 },
                 scales: {
                     yAxes: [{
+                        ticks: {
+                            // Include a dollar sign in the ticks
+                            callback: function(value, index, values) {
+                                return  value+'°C';
+                            }
+                        },
                         type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
                         display: true,
                         position: "left",
@@ -116,7 +133,12 @@ $(document).ready(function(){
                         display: true,
                         position: "right",
                         id: "y-axis-2",
-    
+                        ticks: {
+                            // Include a dollar sign in the ticks
+                            callback: function(value, index, values) {
+                                return  value+'%';
+                            }
+                        },
                         // grid line settings
                         gridLines: {
                             drawOnChartArea: false, // only want the grid lines for one axis to show up
@@ -127,7 +149,7 @@ $(document).ready(function(){
         });
     }
     setInterval(show,5000);
-    setInterval(showcharts,1000);
+    setInterval(showcharts,5000);
     marker.addEventListener("click", function(){          
 		map.openInfoWindow(infoWindow,currentUser); //开启信息窗口
 	});
@@ -174,7 +196,7 @@ function getHexToString(hexStr){
 		var ch = '?';
 		if ( symbolIndex >= 0 && value <= 126 )
 		{
-			ch = symbols.charAt(symbolIndex)
+			ch = symbols.charAt(symbolIndex);
 		}
 		text += ch;
 	}
