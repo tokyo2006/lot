@@ -99,24 +99,18 @@ $(document).ready(function(){
             var addr;
             var i;    
             for(i=0;i<data.list.length;i++){
-              console.log("----2",data.list[i]);
-              console.log("----1",data.list[i].data);
                var res = getHexToString(data.list[i].data);
-               console.log("----",res);
-               addr = JSON.parse(res).address;
-               console.log("+++++",addr);
-               console.log("---",addr);
-              if(addr.lnt !== 0 && addr.lat !== 0 ){
-                   break;
-               }
-            };
-            if(i>=data.list.length) return;
-            // console.log("123---",JSON.parse(getHexToString(addr)));
+               res = JSON.parse(res);
+                $("#currentTemp").val(res.t + "°C");
+                $("#currentHumi").val(res.h + "%");
+               addr = res.address;
+              if(addr.lnt == 0 || addr.lat == 0 ){
+                   continue;
+               }else{
 
             var res = getHexToString(data.list[i].data);
             res = JSON.parse(res);
-            $("#currentTemp").val(res.t + "°C");
-            $("#currentHumi").val(res.h + "%");
+          
             lat1 = res.address.lat;
             lat120 = parseInt((lat1 * 10000)/1000000);
             lat43 = ((lat1 * 10000)%1000000);
@@ -129,10 +123,11 @@ $(document).ready(function(){
 
             temp = res.t;
             humi = res.h;
-        });
 
 
-        var originalPoint = new BMap.Point(lng, lat);
+
+
+            var originalPoint = new BMap.Point(lng, lat);
         console.log("4444444",originalPoint);
         var pointArr = [];
         pointArr.push(originalPoint);
@@ -148,19 +143,29 @@ $(document).ready(function(){
         
         currentTime = new Date();
         timedata.push(currentTime.getHours()+':'+currentTime.getMinutes()+':'+currentTime.getSeconds());
-        temps.push(randomScalingFactor());
-        humis.push(randomScalingFactor()+10);
+        temps.push(temp);
+        humis.push(humi);
         map.closeInfoWindow(infoWindow,currentUser);
         linePoints.push(currentUser);
         geoc.getLocation(currentUser, function(rs){
             var addComp = rs.addressComponents;
             $("#currentAddress").val(addComp.province + " " + addComp.city + " " + addComp.district + " " + addComp.street + " " + addComp.streetNumber);
-		});    
+         });    
         addLine(linePoints);
         marker.setPosition(currentUser);       
         infoWindow = new BMap.InfoWindow('T:'+temp+'C°<br/>H:'+humi+'% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts);
-        map.panTo(currentUser); 
+        map.panTo(currentUser);
+      }
+            };
+        });
     }
+
+
+
+
+
+
+
     function showcharts(){
         var lineChartData = {
             labels: timedata,
@@ -247,7 +252,8 @@ function opendoor(){
     alert("You opened door");
 }
 function getCurrentUser(){ 
-    return new BMap.Point(120.61990712,31.31798737);
+    // return new BMap.Point(120.61990712,31.31798737);
+    return new BMap.Point(120.73952113896,31.271784510504);
 }
 function randomScalingFactor(){
     return Math.round(rand(-100, 100));
