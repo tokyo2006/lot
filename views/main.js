@@ -8,6 +8,8 @@ window.chartColors = {
     grey: 'rgb(201, 203, 207)'
 };
 
+var displayTemp;
+var displayHumi;
 var startPlace = new BMap.Point(120.617021,31.336082);    //起点
 var endPlace = new BMap.Point(120.739438,31.271713);    //终点
 var temp = 10;
@@ -112,6 +114,8 @@ $(document).ready(function () {
         var lng;
         var lat;
         var originLat;
+
+
      
         $.ajaxSetup({
             async: false
@@ -136,8 +140,10 @@ $(document).ready(function () {
                     addr = res.address;
                     temp = res.t;
                     humi = res.h;
-                    $("#currentTemp").val(res.t + "°C");
-                    $("#currentHumi").val(res.h + "%");
+                    displayTemp = res.t;
+                    displayHumi = res.h;
+                    $("#currentTemp").val("Current Temperature: " + displayTemp + "°C");
+                    $("#currentHumi").val("Current Humidity: " + displayHumi + "%");
                     if (timedata.length >= 20) timedata.shift();
                     if (temps.length >= 20) temps.shift();
                     if (humis.length >= 20) humis.shift();
@@ -211,7 +217,7 @@ $(document).ready(function () {
                 stacked: false,
                 title: {
                     display: true,
-                    text: ' Temperature Trace Chart'
+                    text: 'Temperature Trace Chart'
                 },
                 scales: {
                     yAxes: [{
@@ -261,7 +267,7 @@ $(document).ready(function () {
                 stacked: false,
                 title: {
                     display: true,
-                    text: ' Humidity Trace Chart'
+                    text: 'Humidity Trace Chart'
                 },
                 scales: {
                     yAxes: [{
