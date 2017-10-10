@@ -36,7 +36,7 @@ var myIcon = new BMap.Icon("truck_mini.png", new BMap.Size(32, 70), {
     anchor: new BMap.Size(30, 10),
     imageOffset: new BMap.Size(0, 0) // 设置图片偏移    
 });
-var marker = new BMap.Marker(currentUser, {
+var marker = new BMap.Marker(startPlace, {
     icon: myIcon
 });
 var geoc = new BMap.Geocoder();
@@ -49,8 +49,8 @@ $(document).ready(function () {
     map.addControl(new BMap.MapTypeControl()); //添加地图类型控件
     map.setCurrentCity("苏州"); // 设置地图显示的城市 此项是必须设置的
     map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
-    map.addOverlay(marker);
-    map.panTo(currentUser);
+   // map.addOverlay(marker);
+
     var drivePath = new BMap.DrivingRoute(map,{renderOptions:{map:map,autoViewport:true}}); //驾车实例
     drivePath.search(startPlace,endPlace);
 
@@ -167,11 +167,11 @@ $(document).ready(function () {
                             var addComp = rs.addressComponents;
                             $("#currentAddress").val(addComp.province + " " + addComp.city + " " + addComp.district + " " + addComp.street + " " + addComp.streetNumber);
                         });
-                        marker.setPosition(currentUser);
-                        linePoints.push(currentUser);
-                        addLine(linePoints);
-                        infoWindow = new BMap.InfoWindow('T:' + temp + 'C°<br/>H:' + humi + '% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts);
-                        map.panTo(currentUser);
+                        // marker.setPosition(currentUser);
+                        // linePoints.push(currentUser);
+                        // addLine(linePoints);
+                        // infoWindow = new BMap.InfoWindow('T:' + temp + 'C°<br/>H:' + humi + '% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts);
+                        // map.panTo(currentUser);
                     }
                 };
             }
@@ -290,7 +290,7 @@ $(document).ready(function () {
     setInterval(showcharts, 2000);
     setTimeout(function(){
 		runningman();
-	},10000);
+	},1000);
     setInterval(showcharts2, 2000);
 
     marker.addEventListener("click", function () {
