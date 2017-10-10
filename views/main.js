@@ -8,12 +8,7 @@ window.chartColors = {
     grey: 'rgb(201, 203, 207)'
 };
 
-var symbols = " !\"#$%&'()*+,-./0123456789:;<=>?@";
-var loAZ = "abcdefghijklmnopqrstuvwxyz";
-symbols += loAZ.toUpperCase();
-symbols += "[\\]^_`";
-symbols += loAZ;
-symbols += "{|}~";
+
 var temp = 10;
 var humi = 50;
 var linePoints = [];
@@ -23,10 +18,8 @@ var timedata = [];
 var startTime = Date.now();
 var endTime = Date.now();
 var convertor = new BMap.Convertor();
-var lstartTime = 1506591300000;
+var lstartTime = 1506591300000; //1506657600000;//Date.now(); //1506591300000;//
 var oldTime;
-var lendTime ;
-
 var currentUser = getCurrentUser();
 linePoints.push(currentUser);
 var pointsLen = linePoints.length,
@@ -48,10 +41,6 @@ var infoWindow = new BMap.InfoWindow('T:16C°<br/>H:80% <br/><input id="door" ty
 $(document).ready(function () {
 
 
-
-
-
-
     var map = new BMap.Map("allmap"); // 创建Map实例
     map.centerAndZoom('苏州', 20); // 初始化地图,设置中心点坐标和地图级别
     map.addControl(new BMap.MapTypeControl()); //添加地图类型控件
@@ -59,25 +48,21 @@ $(document).ready(function () {
     map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
     map.addOverlay(marker);
     map.panTo(currentUser);
-    hexSample = '7b2268223a35372e30302c2274223a32352e30307d';
-    //alert(getHexToString(hexSample));
     var myLayout = $("body").layout({
         applyDefaultStyles: true,
-        west_size: 100,
-        south_size: 100
+        north__closable: false, //可以被关闭  
+        north__resizable: true, //可以改变大小  
+        north__size: 120, //pane的大小 
+        spacing_open: -1
     });
     var ctx = $("#myChart");
-    //ctx.canvas.parentNode.style.height = '128px';
+
     function addLine(points) {
         if (pointsLen == 0) {
             return;
         }
-        // 创建标注对象并添加到地图     
-        for (i = 0; i < pointsLen; i++) {
-            linePoints.push(new BMap.Point(points[i].lng, points[i].lat));
-        }
 
-        polyline = new BMap.Polyline(linePoints, {
+        polyline = new BMap.Polyline(points, {
             strokeColor: "red",
             strokeWeight: 2,
             strokeOpacity: 0.5
@@ -87,20 +72,15 @@ $(document).ready(function () {
 
     function show() {
 
-        endTime = Date.now();
-        console.log("start time =======:",lstartTime);
+        console.log("start time =======:", lstartTime);
         //var originUrl = "https://www.loraflow.io/v1/application/data?appeui=8f1d7956939f95a0&token=1v84wa7375651a298f9ff8eb008fa&order=desc&startTime="+startTime+"&endTime="+endTime+'&limit=24';
-        var originUrl = "https://www.loraflow.io/v1/application/data?appeui=8f1d7956939f95a0&token=1v84wa7375651a298f9ff8eb008fa&order=asc&start="+lstartTime+"&limit=10";
-        lstartTime = oldTime==null?lstartTime:oldTime+1000;
-        var lng1;
-        var lng32;
-        var lng16;
+        var originUrl = "https://www.loraflow.io/v1/application/data?appeui=8f1d7956939f95a0&token=1v84wa7375651a298f9ff8eb008fa&order=asc&start=" + lstartTime + "&limit=10";
+        lstartTime = oldTime == null ? lstartTime : oldTime + 1000;
+        var origLng;
         var lng;
         var lat;
-        var lat1;
-        var lat120;
-        var lat43;
-
+        var originLat;
+     
         $.ajaxSetup({
             async: false
         });
@@ -108,72 +88,61 @@ $(document).ready(function () {
         $.get(originUrl, null, function (data) {
             var addr;
             var i;
-            console.log('111111111',data.list);
-            for (i = 0; i < data.list.length; i++) {
-                var timestamp = data.list[i]['$time'];
-                if(oldTime!=null&& oldTime==timestamp){
-                    break;
+            console.log('111111111', data.list);
+            if (data.list != null) {
+                for (i = 0; i < data.list.length; i++) {
+                    var timestamp = data.list[i]['$time'];
+                    if (oldTime != null && oldTime == timestamp) {
+                        break;
+                    }
+                    oldTime = timestamp;
+                    var newDate = new Date();
+                    newDate.setTime(timestamp);
+                    var res = getHexToString(data.list[i].data);
+                    res = JSON.parse(res);
+                    console.log('updated', res.t, res.h);
+                    addr = res.address;
+                    temp = res.t;
+                    humi = res.h;
+                    $("#currentTemp").val(res.t + "°C");
+                    $("#currentHumi").val(res.h + "%");
+                    if (timedata.length >= 20) timedata.shift();
+                    if (temps.length >= 20) temps.shift();
+                    if (humis.length >= 20) humis.shift();
+                    timedata.push(newDate.getHours() + ':' + newDate.getMinutes() + ':' + newDate.getSeconds());
+                    temps.push(temp);
+                    humis.push(humi);
+                    if (addr.lnt == 0 || addr.lat == 0) {
+                        continue;
+                    } else {
+                        originLat = res.address.lat;
+                        lat = parseInt((originLat * 10000) / 1000000) + parseFloat(((originLat * 10000) % 1000000) / 600000);
+                        origLng = res.address.lng;
+                        lng = parseInt((origLng * 10000) / 1000000) + parseFloat(((origLng * 10000) % 1000000) / 600000);
+                        var originalPoint = new BMap.Point(lng, lat);
+                        console.log("4444444", originalPoint);
+                        var pointArr = [];
+                        pointArr.push(originalPoint);
+                        convertor.translate(pointArr, 1, 5, translateCallback);
+                    }
                 }
-                oldTime = timestamp;
-                var newDate = new Date();
-                newDate.setTime(timestamp);
-                var res = getHexToString(data.list[i].data);
-                res = JSON.parse(res);
-                console.log('updated', res.t, res.h);
-              
-                addr = res.address;
-                temp = res.t;
-                humi = res.h;
-                $("#currentTemp").val(res.t + "°C");
-                $("#currentHumi").val(res.h + "%");
-                currentTime = new Date();
-                if (timedata.length >= 20) timedata.shift();
-                if (temps.length >= 20) temps.shift();
-                if (humis.length >= 20) humis.shift();
-                timedata.push(newDate.getHours() + ':' + newDate.getMinutes() + ':' + newDate.getSeconds());
-                temps.push(temp);
-                humis.push(humi);
-                if (addr.lnt == 0 || addr.lat == 0) {
-                    continue;
-                } else {
-                    lat1 = res.address.lat;
-                    lat120 = parseInt((lat1 * 10000) / 1000000);
-                    lat43 = ((lat1 * 10000) % 1000000);
-                    lat = lat120 + parseFloat(lat43 / 600000);
-
-                    lng1 = res.address.lng;
-                    lng31 = parseInt((lng1 * 10000) / 1000000);
-                    lng16 = ((lng1 * 10000) % 1000000);
-                    lng = lng31 + parseFloat(lng16 / 600000);
-
-                    
-                    var originalPoint = new BMap.Point(lng, lat);
-                    console.log("4444444", originalPoint);
-                    var pointArr = [];
-                    pointArr.push(originalPoint);
-                    translateCallback = function (data) {
-                        console.log("see data status---", data);
-                        if (data.status === 0) {
-                            currentUser = data.points[0];
-                            console.log("callback------", currentUser);
-                        }
-                    };
-                    convertor.translate(pointArr, 1, 5, translateCallback);
-
-
-                    
-                    map.closeInfoWindow(infoWindow, currentUser);
-                    linePoints.push(currentUser);
-                    geoc.getLocation(currentUser, function (rs) {
-                        var addComp = rs.addressComponents;
-                        $("#currentAddress").val(addComp.province + " " + addComp.city + " " + addComp.district + " " + addComp.street + " " + addComp.streetNumber);
-                    });
-                    addLine(linePoints);
-                    marker.setPosition(currentUser);
-                    infoWindow = new BMap.InfoWindow('T:' + temp + 'C°<br/>H:' + humi + '% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts);
-                    map.panTo(currentUser);
-                }
-            };
+                translateCallback = function (data) {
+                    if (data.status === 0) {
+                        currentUser = data.points[0];
+                        map.closeInfoWindow(infoWindow, currentUser);
+                        linePoints.push(currentUser);
+                        geoc.getLocation(currentUser, function (rs) {
+                            var addComp = rs.addressComponents;
+                            $("#currentAddress").val(addComp.province + " " + addComp.city + " " + addComp.district + " " + addComp.street + " " + addComp.streetNumber);
+                        });
+                        marker.setPosition(currentUser);
+                        linePoints.push(currentUser);
+                        addLine(linePoints);
+                        infoWindow = new BMap.InfoWindow('T:' + temp + 'C°<br/>H:' + humi + '% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts);
+                        map.panTo(currentUser);
+                    }
+                };
+            }
         });
     }
 
@@ -292,10 +261,15 @@ function rand() {
 }
 
 function getHexToString(hexStr) {
+    var symbols = " !\"#$%&'()*+,-./0123456789:;<=>?@";
+    var loAZ = "abcdefghijklmnopqrstuvwxyz";
+    symbols += loAZ.toUpperCase();
+    symbols += "[\\]^_`";
+    symbols += loAZ;
+    symbols += "{|}~";
     var hex = "0123456789abcdef";
     var text = "";
     var i = 0;
-
     for (i = 0; i < hexStr.length; i = i + 2) {
         var char1 = hexStr.charAt(i);
         if (char1 == ':') {

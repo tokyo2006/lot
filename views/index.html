@@ -1,106 +1,144 @@
 <!DOCTYPE html>
 <html lang="en-US">
+
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Iot Demo</title>
-    <link href="jquery-ui.css" rel="stylesheet">
+	<title>Iot Demo</title>
+	<link href="jquery-ui.css" rel="stylesheet">
 	<style type="text/css">
-	
-    canvas {
-        -moz-user-select: none;
-        -webkit-user-select: none;
-        -ms-user-select: none;
-    }
-        body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
-        body{
-		font-family: "Trebuchet MS", sans-serif;
-		margin: 50px;
-	}
-	.demoHeaders {
-		margin-top: 2em;
-	}
-	#dialog-link {
-		padding: .4em 1em .4em 20px;
-		text-decoration: none;
-		position: relative;
-	}
-	#dialog-link span.ui-icon {
-		margin: 0 5px 0 0;
-		position: absolute;
-		left: .2em;
-		top: 50%;
-		margin-top: -8px;
-	}
-	#icons {
-		margin: 0;
-		padding: 0;
-	}
-	#icons li {
-		margin: 2px;
-		position: relative;
-		padding: 4px 0;
-		cursor: pointer;
-		float: left;
-		list-style: none;
-	}
-	#icons span.ui-icon {
-		float: left;
-		margin: 0 4px;
-	}
-	#chart-wrapper {
-    position: relative;
-    width: 800px;
-    height: 800px;
-	}
-	.fakewindowcontain .ui-widget-overlay {
-		position: absolute;
-	}
-	select {
-		width: 200px;
-	}
-        </style>
-    <script type="text/javascript" src="chart.js"></script>
-    <script type="text/javascript" src="jquery.js"></script>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=sUb7A9600UYB2yGog9V78VDS"></script>
- 
-    <script type="text/javascript" src="layout.js"></script> 
-    <script type="text/javascript" src="angular.min.js"></script>
-    <script type="text/javascript" src="main.js"></script>
-    <script>
-    	angular.module("lotApp",[]).controller("sideController",function($scope){
-    		$scope.currentPos = "";
-    		$scope.currentTem = "";
-    		$scope.currentHum = "";
-    	})
-    </script>
-    
-</head>
-<body ng-app="lotApp">
-    <div class="ui-layout-center" style="width:100%;height:1800px">
-        <div id="allmap" style="width:100%;height:60%"></div>
+		canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
 
-        <div class="ui-layout-south" style="width:100%;height:40%">
+		body,
+		html,
+		#allmap {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			margin: 0;
+			font-family: "微软雅黑";
+		}
+
+		body {
+			font-family: "Trebuchet MS", sans-serif;
+			margin: 50px;
+		}
+
+		.demoHeaders {
+			margin-top: 2em;
+		}
+
+		#dialog-link {
+			padding: .4em 1em .4em 20px;
+			text-decoration: none;
+			position: relative;
+		}
+
+		#dialog-link span.ui-icon {
+			margin: 0 5px 0 0;
+			position: absolute;
+			left: .2em;
+			top: 50%;
+			margin-top: -8px;
+		}
+
+		#icons {
+			margin: 0;
+			padding: 0;
+		}
+
+		#icons li {
+			margin: 2px;
+			position: relative;
+			padding: 4px 0;
+			cursor: pointer;
+			float: left;
+			list-style: none;
+		}
+
+		#icons span.ui-icon {
+			float: left;
+			margin: 0 4px;
+		}
+
+		#chart-wrapper {
+			position: relative;
+			width: 800px;
+			height: 800px;
+		}
+
+		.fakewindowcontain .ui-widget-overlay {
+			position: absolute;
+		}
+
+		select {
+			width: 200px;
+		}
+	</style>
+	<script type="text/javascript" src="chart.js"></script>
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=sUb7A9600UYB2yGog9V78VDS"></script>
+
+	<script type="text/javascript" src="layout.js"></script>
+	<script type="text/javascript" src="angular.min.js"></script>
+	<script type="text/javascript" src="main.js"></script>
+	<script>
+		angular.module("lotApp", []).controller("sideController", function ($scope) {
+			$scope.currentPos = "";
+			$scope.currentTem = "";
+			$scope.currentHum = "";
+		})
+	</script>
+
+</head>
+
+<body ng-app="lotApp">
+	<div class="ui-layout-center" style="width:100%;height:1800px">
+		<div id="allmap" style="width:100%;height:60%"></div>
+
+		<div class="ui-layout-south" style="width:100%;height:40%">
 			<div class="chart-wrapper" style="position: relative; height:20vh; width:80vw">
 				<canvas id="myChart"></canvas>
 			</div>
-        </div>  
-    </div>
-    <div class="ui-layout-west" ng-controller="sideController">
-    	<div style="position:absolute;margin-top:100px">
-         	<label>当前地点:</label>
-       	 	<input id="currentAddress" name="currentAddress" type="text" style="height:20px;border-color:rgb(97,159,235);border-radius:4px;margin-top:4px;width: 170px;text-align:center" ng-model="currentPos">
-    	</div>
-    	<div style="position:absolute;margin-top:170px">
-         	<label>当前温度:</label>
-       	 	<input id="currentTemp" name="currentTemp" type="text" style="height:20px;border-color:rgb(97,159,235);border-radius:4px;margin-top:4px;width: 170px;text-align:center" ng-model="currentTem">
-    	</div>
-    	<div style="position:absolute;margin-top:240px">
-         	<label>当前湿度:</label>
-       	 	<input id="currentHumi" name="currentHumi" type="text" style="height:20px;border-color:rgb(97,159,235);border-radius:4px;margin-top:4px;width: 170px;text-align:center" ng-model="currentHum">
-    	</div>
-    </div>
-  
+		</div>
+	</div>
+	<div class="ui-layout-north" style="text-align: center;line-height: 120px;font-size:59px" ng-controller="sideController">
+		<div style="background-color:rgb(250,182,50);height:100%;">
+			<span style="text-align:center">
+				<strong>DELIVERY</strong>
+			</span>
+			<span style="text-align:center;-webkit-font-smoothing: none;color: #333;font-family: inherit;">INFOGRAPHIC</span>
+		</div>Å
+	</div>
+	<div class="ui-layout-west" ng-controller="sideController">
+
+		<div style="position:absolute;margin-top:570px; margin-left: 50px;">
+			<label>当前地点:</label>
+			<input id="currentAddress" name="currentAddress" type="text" style="height:20px;border-color:rgb(97,159,235);border-radius:4px;margin-top:4px;width: 170px;text-align:center"
+			    ng-model="currentPos">
+		</div>
+		<div style="position:absolute;margin-top:610px;    margin-left: 50px;">
+			<label>当前温度:</label>
+			<input id="currentTemp" name="currentTemp" type="text" style="height:20px;border-color:rgb(97,159,235);border-radius:4px;margin-top:4px;width: 170px;text-align:center"
+			    ng-model="currentTem">
+		</div>
+		<div style="position:absolute;margin-top:650px;    margin-left: 50px;">
+			<label>当前湿度:</label>
+			<input id="currentHumi" name="currentHumi" type="text" style="height:20px;border-color:#A5CEFF;border-radius:4px;margin-top:4px;width: 170px;text-align:center"
+			    ng-model="currentHum">
+		</div>
+		<div><img style="width: 76%;
+			height: 533px;
+			padding-left: 45px;
+			padding-top: 18px;
+			overflow-y:visible;" src="temph.jpg" /></div>
+	</div>
+
 </body>
+
 </html>

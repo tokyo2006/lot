@@ -39,6 +39,6 @@ var server = http.createServer(function (req, res) {
     controller(req, res);
 });
 
-server.listen(3000, 'localhost');
+server.listen(3000, '0.0.0.0');
 
 
