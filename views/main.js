@@ -97,7 +97,7 @@ $(document).ready(function () {
 				}
 			}
 			setTimeout(function(){
-				resetMkPoint(5);
+				resetMkPoint(10);
 			},100);
 
 		});
@@ -106,7 +106,7 @@ $(document).ready(function () {
 
         console.log("start time =======:", lstartTime);
         //var originUrl = "https://www.loraflow.io/v1/application/data?appeui=8f1d7956939f95a0&token=1v84wa7375651a298f9ff8eb008fa&order=desc&startTime="+startTime+"&endTime="+endTime+'&limit=24';
-        var originUrl = "https://www.loraflow.io/v1/application/data?appeui=8f1d7956939f95a0&token=1v84wa7375651a298f9ff8eb008fa&order=asc&start=" + lstartTime + "&limit=10";
+        var originUrl = "https://www.loraflow.io/v1/application/data?appeui=8f1d7956939f95a0&token=1v84wa7375651a298f9ff8eb008fa&order=asc&start=" + lstartTime + "&limit=20";
         lstartTime = oldTime == null ? lstartTime : oldTime + 1000;
         var origLng;
         var lng;
