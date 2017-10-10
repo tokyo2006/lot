@@ -849,7 +849,7 @@ $.layout.defaults = {
 	}
 ,	west: {
 		paneSelector:			".ui-layout-west"
-	,	size:					400
+	,	size:					580
 	,	resizerCursor:			"w-resize"
 	,	customHotkey:			""
 	}

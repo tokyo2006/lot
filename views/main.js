@@ -14,7 +14,9 @@ var humi = 50;
 var linePoints = [];
 var temps = [];
 var humis = [];
-var timedata = [];
+var timedata = ['17:35:1','17:35:8','17:35:15','17:35:23','17:35:28','17:35:33','17:35:38',
+'17:35:43','17:35:48','17:35:53','17:35:58','17:36:3','17:36:8','17:36:13','17:36:18',
+'17:36:23','17:36:28','17:36:33','17:36:38','17:36:43'];
 var startTime = Date.now();
 var endTime = Date.now();
 var convertor = new BMap.Convertor();
@@ -56,6 +58,8 @@ $(document).ready(function () {
         spacing_open: -1
     });
     var ctx = $("#myChart");
+
+    var ctx2 = $("#myChart2");
 
     function addLine(points) {
         if (pointsLen == 0) {
@@ -162,13 +166,6 @@ $(document).ready(function () {
                 fill: false,
                 data: temps,
                 yAxisID: "y-axis-1",
-            }, {
-                label: "Humidity",
-                borderColor: window.chartColors.blue,
-                backgroundColor: window.chartColors.blue,
-                fill: false,
-                data: humis,
-                yAxisID: "y-axis-2"
             }]
         };
         new Chart.Line(ctx, {
@@ -186,7 +183,7 @@ $(document).ready(function () {
                 stacked: false,
                 title: {
                     display: true,
-                    text: ' Temperature and Humidity Trace Chart'
+                    text: ' Temperature Trace Chart'
                 },
                 scales: {
                     yAxes: [{
@@ -202,11 +199,44 @@ $(document).ready(function () {
                         display: true,
                         position: "left",
                         id: "y-axis-1",
-                    }, {
-                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                        display: true,
-                        position: "right",
-                        id: "y-axis-2",
+                    }
+                    ],
+                }
+            }
+        });
+    }
+
+    function showcharts2() {
+        var lineChartData = {
+            labels: timedata,
+            datasets: [{
+                label: "Humidity",
+                borderColor: window.chartColors.blue,
+                backgroundColor: window.chartColors.blue,
+                fill: false,
+                data: humis,
+                yAxisID: "y-axis-1",
+            }]
+        };
+        new Chart.Line(ctx2, {
+            data: lineChartData,
+            options: {
+                animation: {
+                    duration: 0, // general animation time
+                },
+                hover: {
+                    animationDuration: 0, // duration of animations when hovering an item
+                },
+                responsiveAnimationDuration: 0,
+                responsive: true,
+                hoverMode: 'index',
+                stacked: false,
+                title: {
+                    display: true,
+                    text: ' Humidity Trace Chart'
+                },
+                scales: {
+                    yAxes: [{
                         ticks: {
                             suggestedMin: 0,
                             suggestedMax: 100,
@@ -215,17 +245,23 @@ $(document).ready(function () {
                                 return value + '%';
                             }
                         },
-                        // grid line settings
-                        gridLines: {
-                            drawOnChartArea: false, // only want the grid lines for one axis to show up
-                        },
+                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: "left",
+                        id: "y-axis-1",
                     }],
                 }
             }
         });
     }
+
+
+
+
     setInterval(show, 2000);
     setInterval(showcharts, 2000);
+    setInterval(showcharts2, 2000);
+
     marker.addEventListener("click", function () {
         map.openInfoWindow(infoWindow, currentUser); //开启信息窗口
     });
