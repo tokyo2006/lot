@@ -8,7 +8,8 @@ window.chartColors = {
     grey: 'rgb(201, 203, 207)'
 };
 
-
+var startPlace = new BMap.Point(120.617021,31.336082);    //起点
+var endPlace = new BMap.Point(120.739438,31.271713);    //终点
 var temp = 10;
 var humi = 50;
 var linePoints = [];
@@ -48,6 +49,9 @@ $(document).ready(function () {
     map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
     map.addOverlay(marker);
     map.panTo(currentUser);
+    var drivePath = new BMap.DrivingRoute(map,{renderOptions:{map:map,autoViewport:true}}); //驾车实例
+    drivePath.search(startPlace,endPlace);
+
     var myLayout = $("body").layout({
         applyDefaultStyles: true,
         north__closable: false, //可以被关闭  
@@ -69,7 +73,31 @@ $(document).ready(function () {
         }); //创建折线  
         map.addOverlay(polyline); //增加折线  
     }
+    function runningman(){
+        var car = new BMap.DrivingRoute(map); 
+        car.search(startPlace,endPlace);
+        car.setSearchCompleteCallback(function(){
+			var pts = car.getResults().getPlan(0).getRoute(0).getPath();    //通过驾车实例，获得一系列点的数组
+			var paths = pts.length;    //获得有几个点
 
+			var carMk = new BMap.Marker(pts[0],{icon:myIcon});
+			map.addOverlay(carMk);
+			i=0;
+			function resetMkPoint(i){
+				carMk.setPosition(pts[i]);
+				if(i < paths){
+					setTimeout(function(){
+						i++;
+						resetMkPoint(i);
+					},100);
+				}
+			}
+			setTimeout(function(){
+				resetMkPoint(5);
+			},100);
+
+		});
+    }
     function show() {
 
         console.log("start time =======:", lstartTime);
@@ -226,6 +254,9 @@ $(document).ready(function () {
     }
     setInterval(show, 2000);
     setInterval(showcharts, 2000);
+    setTimeout(function(){
+		runningman();
+	},10000);
     marker.addEventListener("click", function () {
         map.openInfoWindow(infoWindow, currentUser); //开启信息窗口
     });
