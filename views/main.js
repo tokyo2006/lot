@@ -82,8 +82,8 @@ function taskConsumer () {
         var temp = tempQueue.shift();
         var humi = humiQueue.shift();
 
-        updateChart1(temp, time);
-        updateChart2(humi, time);
+        updateChart1(temp, '');
+        updateChart2(humi, '');
     }
     setTimeout(taskConsumer, 1000);
 }
