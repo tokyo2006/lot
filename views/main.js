@@ -10,7 +10,8 @@ window.chartColors = {
 
 var displayTemp;
 var displayHumi;
-var startPlace = new BMap.Point(120.617021,31.336082);    //起点
+//var startPlace = new BMap.Point(120.617021,31.336082);    //起点
+var startPlace = new BMap.Point(120.734389,31.267565); 
 var endPlace = new BMap.Point(120.739438,31.271713);    //终点
 var temp = 10;
 var humi = 50;
@@ -83,24 +84,54 @@ $(document).ready(function () {
         var car = new BMap.DrivingRoute(map); 
         car.search(startPlace,endPlace);
         car.setSearchCompleteCallback(function(){
-			var pts = car.getResults().getPlan(0).getRoute(0).getPath();    //通过驾车实例，获得一系列点的数组
-			var paths = pts.length;    //获得有几个点
+            var pts = car.getResults().getPlan(0).getRoute(0).getPath();    //通过驾车实例，获得一系列点的数组
+            // alert("new point lat:"+pts[0].lat+",lng: "+pts[0].lng)
+            var lng = 120.734273, lat = 31.267561;
+            var ptsMock = [new BMap.Point(lng, lat)]; 
+            for(i=0;i<900;i++){
+                lng-=0.000033/900;
+                lat+=0.002710/900;
+                ptsMock.push(new BMap.Point(lng, lat));
+            }
+            
+            for(i=0;i<59;i++){
+                lng+=0.000003;
+                lat+=0.000001;
+                ptsMock.push(new BMap.Point(lng, lat));
+            }
 
-			var carMk = new BMap.Marker(pts[0],{icon:myIcon});
+            for(i=0;i<1503;i++){
+                lng+=0.00000314;
+                lat+=0.000001;
+                ptsMock.push(new BMap.Point(lng, lat));
+            }
+
+            for (i=0;i<173;i++){
+                lng += 0.000291/173;
+                lat -= 0.000001;
+                ptsMock.push(new BMap.Point(lng, lat));
+            }
+
+            var paths = ptsMock.length;    //获得有几个点
+            // alert(paths);
+			var carMk = new BMap.Marker(ptsMock[0],{icon:myIcon});
 			map.addOverlay(carMk);
 			i=0;
 			function resetMkPoint(i){
-				carMk.setPosition(pts[i]);
-				if(i < paths){
+                carMk.setPosition(ptsMock[i]);
+                //alert(ptsMock[i].lat, ptsMock[i].lng);
+                if (i === paths-1) {alert('stop');return;}
+                i = Math.min(i+5, paths-1);
 					setTimeout(function(){
-						i++;
-						resetMkPoint(i);
-					},100);
+                       // alert("new point lat:"+ptsMock[i].lat+",lng: "+ptsMock[i].lng)
+                        resetMkPoint(i);
+                        
+					},500);
 				}
-			}
+
 			setTimeout(function(){
-				resetMkPoint(10);
-			},100);
+				resetMkPoint(0);
+			},500);
 
 		});
     }
