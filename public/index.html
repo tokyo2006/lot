@@ -7,86 +7,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Iot Demo</title>
 	<link href="jquery-ui.css" rel="stylesheet">
-	<style type="text/css">
-		canvas {
-			-moz-user-select: none;
-			-webkit-user-select: none;
-			-ms-user-select: none;
-		}
-
-		body,
-		html,
-		#allmap {
-			width: 100%;
-			height: 100%;
-			overflow: hidden;
-			margin: 0;
-			font-family: "微软雅黑";
-		}
-
-		body {
-			font-family: "Trebuchet MS", sans-serif;
-			margin: 50px;
-		}
-
-		.demoHeaders {
-			margin-top: 2em;
-		}
-
-		#dialog-link {
-			padding: .4em 1em .4em 20px;
-			text-decoration: none;
-			position: relative;
-		}
-
-		#dialog-link span.ui-icon {
-			margin: 0 5px 0 0;
-			position: absolute;
-			left: .2em;
-			top: 50%;
-			margin-top: -8px;
-		}
-
-		#icons {
-			margin: 0;
-			padding: 0;
-		}
-
-		#icons li {
-			margin: 2px;
-			position: relative;
-			padding: 4px 0;
-			cursor: pointer;
-			float: left;
-			list-style: none;
-		}
-
-		#icons span.ui-icon {
-			float: left;
-			margin: 0 4px;
-		}
-
-		#chart-wrapper {
-			position: relative;
-			width: 800px;
-			height: 800px;
-		}
-
-		.fakewindowcontain .ui-widget-overlay {
-			position: absolute;
-		}
-
-		select {
-			width: 200px;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="main.css">
 	<script type="text/javascript" src="chart.js"></script>
 	<script type="text/javascript" src="jquery.js"></script>
 	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=sUb7A9600UYB2yGog9V78VDS"></script>
 
 	<script type="text/javascript" src="layout.js"></script>
 	<script type="text/javascript" src="angular.min.js"></script>
-	<script type="text/javascript" src="main.js"></script>
+	<script type="text/javascript" src="./public/main.js"></script>
 	<script>
 		angular.module("lotApp", []).controller("sideController", function ($scope) {
 			$scope.currentPos = "";
@@ -123,16 +51,16 @@
 			    ng-model="currentPos">
 		</div> -->
 
-		<div style="position:absolute;margin-top:17px;margin-left: 380px;">
-			<!-- <label>当前温度:</label> -->
-			<input id="currentTemp" name="currentTemp" type="text" style="height:20px;border-color:rgb(97,159,235);border-radius:4px;margin-top:4px;width: 170px;text-align:center"
-			    ng-model="currentTem">
-		</div>
-		<div style="position:absolute;margin-top:300px;    margin-left: 380px;">
-			<!-- <label>当前湿度:</label> -->
-			<input id="currentHumi" name="currentHumi" type="text" style="height:20px;border-color:#A5CEFF;border-radius:4px;margin-top:4px;width: 170px;text-align:center"
-			    ng-model="currentHum">
-		</div>
+		<!--<div style="position:absolute;margin-top:17px;margin-left: 380px;">-->
+			<!--&lt;!&ndash; <label>当前温度:</label> &ndash;&gt;-->
+			<!--<input id="currentTemp" name="currentTemp" type="text" style="height:20px;border-color:rgb(97,159,235);border-radius:4px;margin-top:4px;width: 170px;text-align:center"-->
+			    <!--ng-model="currentTem">-->
+		<!--</div>-->
+		<!--<div style="position:absolute;margin-top:300px;    margin-left: 380px;">-->
+			<!--&lt;!&ndash; <label>当前湿度:</label> &ndash;&gt;-->
+			<!--<input id="currentHumi" name="currentHumi" type="text" style="height:20px;border-color:#A5CEFF;border-radius:4px;margin-top:4px;width: 170px;text-align:center"-->
+			    <!--ng-model="currentHum">-->
+		<!--</div>-->
 
 
 		<!-- <div>
@@ -143,19 +71,31 @@
 			overflow-y:visible;" src="temph.jpg" />
 		</div> -->
 
-			<div class="ui-layout-south" style="width:100%;height:40%">
-				<div class="chart-wrapper" style="position: relative; height:10vh; width:40vw">
+			<div class="ui-layout-south">
+				<div class="chart-wrapper">
+					<div class="title">
+						<div class="title-content">Temperature Trace Chart</div>
+						<div class="value-label-comb">
+							<div id="currentTemp" class="value"></div>
+							<div class="label">Current Temperature</div>
+						</div>
+					</div>
 					<canvas id="myChart"></canvas>
 				</div>
 			</div>
 
-			<div class="ui-layout-south" style="width:100%;height:40%">
-				<div class="chart-wrapper" style="position: relative; margin-top:50px;height:10vh; width:40vw">
+			<div class="ui-layout-south">
+				<div class="chart-wrapper">
+					<div class="title">
+						<div class="title-content">Temperature Trace Chart</div>
+						<div class="value-label-comb">
+							<div id="currentHumi" class="value"></div>
+							<div class="label">Current Humidity</div>
+						</div>
+					</div>
 					<canvas id="myChart2"></canvas>
 				</div>
 			</div>
-
-
 		</div>
 
 </body>

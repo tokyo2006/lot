@@ -1,3 +1,7 @@
+var showcharts = require('./chart1');
+var showcharts2 = require('./chart2');
+var createChartData = require('./chartData');
+
 window.chartColors = {
     red: 'rgb(255, 99, 132)',
     orange: 'rgb(255, 159, 64)',
@@ -44,6 +48,47 @@ var marker = new BMap.Marker(startPlace, {
 });
 var geoc = new BMap.Geocoder();
 var infoWindow = new BMap.InfoWindow('T:16C°<br/>H:80% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts);
+
+var datas1 = [];
+var labels1 = []
+function updateChart1 (item, label) {
+    var ctx = $("#myChart");
+    datas1 = createChartData(20, datas1, item, null);
+    labels1 = createChartData(20, labels1, label, '');
+    showcharts(ctx, labels1, datas1)
+}
+
+var datas2 = [];
+var labels2 = [];
+function updateChart2 (item, label) {
+    var ctx = $("#myChart2");
+    datas2 = createChartData(20, datas2, item, null);
+    labels2 = createChartData(20, labels2, label, '');
+    showcharts2(ctx, labels2, datas2)
+}
+
+const timeQueue = [];
+const tempQueue = [];
+const humiQueue = [];
+function addTask (time, temp, humi) {
+    timeQueue.push(time);
+    tempQueue.push(temp);
+    humiQueue.push(humi);
+}
+
+function taskConsumer () {
+    if (timeQueue.length > 0) {
+        var time = timeQueue.shift();
+        var temp = tempQueue.shift();
+        var humi = humiQueue.shift();
+
+        updateChart1(temp, time);
+        updateChart2(humi, time);
+    }
+    setTimeout(taskConsumer, 1000);
+}
+taskConsumer();
+
 $(document).ready(function () {
 
 
@@ -173,14 +218,18 @@ $(document).ready(function () {
                     humi = res.h;
                     displayTemp = res.t;
                     displayHumi = res.h;
-                    $("#currentTemp").val("Current Temperature: " + displayTemp + "°C");
-                    $("#currentHumi").val("Current Humidity: " + displayHumi + "%");
+                    $("#currentTemp").text(displayTemp + "°C");
+                    $("#currentHumi").text(displayHumi + "%");
                     if (timedata.length >= 20) timedata.shift();
                     if (temps.length >= 20) temps.shift();
                     if (humis.length >= 20) humis.shift();
-                    timedata.push(newDate.getHours() + ':' + newDate.getMinutes() + ':' + newDate.getSeconds());
+                    var timeLabel = newDate.getHours() + ':' + newDate.getMinutes() + ':' + newDate.getSeconds();
+                    timedata.push(timeLabel);
                     temps.push(temp);
                     humis.push(humi);
+
+                    addTask(timeLabel, temp, humi);
+
                     if (addr.lnt == 0 || addr.lat == 0) {
                         continue;
                     } else {
@@ -221,114 +270,21 @@ $(document).ready(function () {
 
 
 
-    function showcharts() {
-        var lineChartData = {
-            labels: timedata,
-            datasets: [{
-                label: "Temperature",
-                borderColor: window.chartColors.red,
-                backgroundColor: window.chartColors.red,
-                fill: false,
-                data: temps,
-                yAxisID: "y-axis-1",
-            }]
-        };
-        new Chart.Line(ctx, {
-            data: lineChartData,
-            options: {
-                animation: {
-                    duration: 0, // general animation time
-                },
-                hover: {
-                    animationDuration: 0, // duration of animations when hovering an item
-                },
-                responsiveAnimationDuration: 0,
-                responsive: true,
-                hoverMode: 'index',
-                stacked: false,
-                title: {
-                    display: true,
-                    text: 'Temperature Trace Chart'
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            suggestedMin: -10,
-                            suggestedMax: 40,
-                            // Include a dollar sign in the ticks
-                            callback: function (value, index, values) {
-                                return value + '°C';
-                            }
-                        },
-                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                        display: true,
-                        position: "left",
-                        id: "y-axis-1",
-                    }
-                    ],
-                }
-            }
-        });
-    }
 
-    function showcharts2() {
-        var lineChartData = {
-            labels: timedata,
-            datasets: [{
-                label: "Humidity",
-                borderColor: window.chartColors.blue,
-                backgroundColor: window.chartColors.blue,
-                fill: false,
-                data: humis,
-                yAxisID: "y-axis-1",
-            }]
-        };
-        new Chart.Line(ctx2, {
-            data: lineChartData,
-            options: {
-                animation: {
-                    duration: 0, // general animation time
-                },
-                hover: {
-                    animationDuration: 0, // duration of animations when hovering an item
-                },
-                responsiveAnimationDuration: 0,
-                responsive: true,
-                hoverMode: 'index',
-                stacked: false,
-                title: {
-                    display: true,
-                    text: 'Humidity Trace Chart'
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            suggestedMin: 0,
-                            suggestedMax: 100,
-                            // Include a dollar sign in the ticks
-                            callback: function (value, index, values) {
-                                return value + '%';
-                            }
-                        },
-                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                        display: true,
-                        position: "left",
-                        id: "y-axis-1",
-                    }],
-                }
-            }
-        });
-    }
+
+
 
 
 
 
     setInterval(show, 2000);
-    setInterval(showcharts, 2000);
+    // setInterval(function () {
+    //     showcharts(ctx, timedata, temps)
+    // }, 2000);
     setTimeout(function(){
 		runningman();
 	},1000);
-    setInterval(showcharts2, 2000);
+    // setInterval(showcharts2, 2000);
 
     marker.addEventListener("click", function () {
         map.openInfoWindow(infoWindow, currentUser); //开启信息窗口
