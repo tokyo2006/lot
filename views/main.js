@@ -28,7 +28,7 @@ var timedata = ['17:35:1','17:35:8','17:35:15','17:35:23','17:35:28','17:35:33',
 var startTime = Date.now();
 var endTime = Date.now();
 var convertor = new BMap.Convertor();
-var lstartTime = 1506591300000; //1506657600000;//Date.now(); //1506591300000;//
+var lstartTime = Date.now();//1506591300000; //1506657600000;//Date.now(); //1506591300000;//
 var oldTime;
 var currentUser = getCurrentUser();
 linePoints.push(currentUser);
@@ -353,3 +353,4 @@ function getHexToString(hexStr) {
     }
     return text;
 }
+ No newline at end of file
