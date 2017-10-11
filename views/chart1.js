@@ -31,7 +31,7 @@ function showcharts(jqNode, labels, datas) {
             scales: {
                 yAxes: [{
                     ticks: {
-                        suggestedMin: -10,
+                        suggestedMin: 10,
                         suggestedMax: 40,
                         // Include a dollar sign in the ticks
                         callback: function (value, index, values) {
