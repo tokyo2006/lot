@@ -15,9 +15,6 @@ var config = {
     },
     module: {
         rules: [
-            {
-                test: /\.less$/,
-                use: ExtractTextPlugin.extract(['css-loader', 'less-loader'])
         ]
     }
 };
