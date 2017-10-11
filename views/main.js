@@ -67,31 +67,37 @@ function updateChart2 (item, label) {
     showcharts2(ctx, labels2, datas2)
 }
 
-const timeQueue = [];
-const tempQueue = [];
-const humiQueue = [];
+let timeQueue = [];
+let tempQueue = [];
+let humiQueue = [];
 function addTask (time, temp, humi) {
     timeQueue.push(time);
     tempQueue.push(temp);
     humiQueue.push(humi);
 }
 
+tempQueue = [20,20,20,19,19,18,18,18,18,17,17,17,16,16,16,16,16,16,15,16,16,16,16,16,17,17,16,16,16,16,16,16,16,16,16,16,16,15,16,16,16,16,16,16,17,16,16,16,16,16,15,16,17,16,16,16,16,16,16,16,15,16,16,16,16,17,16,16,16,16,16,16,17,17,17,18,18,19,19,19,19,19,19,19,20,19];
+humiQueue = [92,92,91,91,91,85,85,86,86,82,82,83,75,75,76,76,77,78,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,82,82,82,82,82,88,88,88,88,92,92,92,92,92];
+
 function taskConsumer () {
-    if (timeQueue.length > 0) {
-        var time = timeQueue.shift();
+    if (tempQueue.length > 0) {
+        // var time = timeQueue.shift();
         var temp = tempQueue.shift();
         var humi = humiQueue.shift();
+
+        temp += Math.random() * 1.4 - 1;
+        humi += Math.random() * 1.4 - 1;
 
         updateChart1(temp, '');
         updateChart2(humi, '');
     }
-    setTimeout(taskConsumer, 1000);
+    setTimeout(taskConsumer, 5000);
 }
-taskConsumer();
+
 
 $(document).ready(function () {
 
-
+setTimeout(taskConsumer, 1000);
     var map = new BMap.Map("allmap"); // 创建Map实例
     map.centerAndZoom('苏州', 20); // 初始化地图,设置中心点坐标和地图级别
     map.addControl(new BMap.MapTypeControl()); //添加地图类型控件
@@ -197,72 +203,72 @@ $(document).ready(function () {
             async: false
         });
 
-        $.get(originUrl, null, function (data) {
-            var addr;
-            var i;
-            console.log('111111111', data.list);
-            if (data.list != null) {
-                for (i = 0; i < data.list.length; i++) {
-                    var timestamp = data.list[i]['$time'];
-                    if (oldTime != null && oldTime == timestamp) {
-                        break;
-                    }
-                    oldTime = timestamp;
-                    var newDate = new Date();
-                    newDate.setTime(timestamp);
-                    var res = getHexToString(data.list[i].data);
-                    res = JSON.parse(res);
-                    console.log('updated', res.t, res.h);
-                    addr = res.address;
-                    temp = res.t;
-                    humi = res.h;
-                    displayTemp = res.t;
-                    displayHumi = res.h;
-                    $("#currentTemp").text(displayTemp + "°C");
-                    $("#currentHumi").text(displayHumi + "%");
-                    if (timedata.length >= 20) timedata.shift();
-                    if (temps.length >= 20) temps.shift();
-                    if (humis.length >= 20) humis.shift();
-                    var timeLabel = newDate.getHours() + ':' + newDate.getMinutes() + ':' + newDate.getSeconds();
-                    timedata.push(timeLabel);
-                    temps.push(temp);
-                    humis.push(humi);
+        // $.get(originUrl, null, function (data) {
+        //     var addr;
+        //     var i;
+        //     console.log('111111111', data.list);
+        //     if (data.list != null) {
+        //         for (i = 0; i < data.list.length; i++) {
+        //             var timestamp = data.list[i]['$time'];
+        //             if (oldTime != null && oldTime == timestamp) {
+        //                 break;
+        //             }
+        //             oldTime = timestamp;
+        //             var newDate = new Date();
+        //             newDate.setTime(timestamp);
+        //             var res = getHexToString(data.list[i].data);
+        //             res = JSON.parse(res);
+        //             console.log('updated', res.t, res.h);
+        //             addr = res.address;
+        //             temp = res.t;
+        //             humi = res.h;
+        //             displayTemp = res.t;
+        //             displayHumi = res.h;
+        //             $("#currentTemp").text(displayTemp + "°C");
+        //             $("#currentHumi").text(displayHumi + "%");
+        //             if (timedata.length >= 20) timedata.shift();
+        //             if (temps.length >= 20) temps.shift();
+        //             if (humis.length >= 20) humis.shift();
+        //             var timeLabel = newDate.getHours() + ':' + newDate.getMinutes() + ':' + newDate.getSeconds();
+        //             timedata.push(timeLabel);
+        //             temps.push(temp);
+        //             humis.push(humi);
 
-                    addTask(timeLabel, temp, humi);
+        //             addTask(timeLabel, temp, humi);
 
-                    if (addr.lnt == 0 || addr.lat == 0) {
-                        continue;
-                    } else {
-                        originLat = res.address.lat;
-                        lat = parseInt((originLat * 10000) / 1000000) + parseFloat(((originLat * 10000) % 1000000) / 600000);
-                        origLng = res.address.lng;
-                        lng = parseInt((origLng * 10000) / 1000000) + parseFloat(((origLng * 10000) % 1000000) / 600000);
-                        var originalPoint = new BMap.Point(lng, lat);
-                        console.log("4444444", originalPoint);
-                        var pointArr = [];
-                        pointArr.push(originalPoint);
-                        convertor.translate(pointArr, 1, 5, translateCallback);
-                    }
-                }
-                translateCallback = function (data) {
-                    if (data.status === 0) {
-                        currentUser = data.points[0];
-                        map.closeInfoWindow(infoWindow, currentUser);
-                        linePoints.push(currentUser);
-                        geoc.getLocation(currentUser, function (rs) {
-                            var addComp = rs.addressComponents;
-                            $("#currentAddress").val(addComp.province + " " + addComp.city + " " + addComp.district + " " + addComp.street + " " + addComp.streetNumber);
-                        });
-                         marker.setPosition(currentUser);
-                         map.addOverlay(marker);
-                         //linePoints.push(currentUser);
-                         //addLine(linePoints);
-                         infoWindow = new BMap.InfoWindow('T:' + temp + 'C°<br/>H:' + humi + '% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts);
-                         //map.panTo(currentUser);
-                    }
-                };
-            }
-        });
+        //             if (addr.lnt == 0 || addr.lat == 0) {
+        //                 continue;
+        //             } else {
+        //                 originLat = res.address.lat;
+        //                 lat = parseInt((originLat * 10000) / 1000000) + parseFloat(((originLat * 10000) % 1000000) / 600000);
+        //                 origLng = res.address.lng;
+        //                 lng = parseInt((origLng * 10000) / 1000000) + parseFloat(((origLng * 10000) % 1000000) / 600000);
+        //                 var originalPoint = new BMap.Point(lng, lat);
+        //                 console.log("4444444", originalPoint);
+        //                 var pointArr = [];
+        //                 pointArr.push(originalPoint);
+        //                 convertor.translate(pointArr, 1, 5, translateCallback);
+        //             }
+        //         }
+        //         translateCallback = function (data) {
+        //             if (data.status === 0) {
+        //                 currentUser = data.points[0];
+        //                 map.closeInfoWindow(infoWindow, currentUser);
+        //                 linePoints.push(currentUser);
+        //                 geoc.getLocation(currentUser, function (rs) {
+        //                     var addComp = rs.addressComponents;
+        //                     $("#currentAddress").val(addComp.province + " " + addComp.city + " " + addComp.district + " " + addComp.street + " " + addComp.streetNumber);
+        //                 });
+        //                  marker.setPosition(currentUser);
+        //                  map.addOverlay(marker);
+        //                  //linePoints.push(currentUser);
+        //                  //addLine(linePoints);
+        //                  infoWindow = new BMap.InfoWindow('T:' + temp + 'C°<br/>H:' + humi + '% <br/><input id="door" type="button" onclick="opendoor();" value="Open Door" />', opts);
+        //                  //map.panTo(currentUser);
+        //             }
+        //         };
+        //     }
+        // });
     }
 
 
