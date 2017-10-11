@@ -353,4 +353,4 @@ function getHexToString(hexStr) {
     }
     return text;
 }
- No newline at end of file
+
